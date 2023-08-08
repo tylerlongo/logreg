@@ -1,0 +1,15 @@
+body {
+    color: #ccc;
+    background-color: #222;
+    margin: 5%;
+}
+a {
+    color: #8cf
+}
+a:visited {
+    color: #88f
+}
+
+a:hover, a:active {
+    color: #f8f
+}

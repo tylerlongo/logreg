@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 # URL of the webpage containing the table
 
-num = 11
+num = 1
 yr = 2023
 
 url = "https://www.driveraverages.com/nascar/numberyear.php?carno_id=" + str(num) + "&yr_id=2023"

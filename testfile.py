@@ -50,9 +50,10 @@ data = []
 
 # URL of the webpage containing the table
 
-nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+nums = [11, 5, 6, 31, 10, 38, 42]
 yrs = [2022, 2023]
 plate = ["Daytona", "Talladega", "Atlanta"]
+rc = ["Sonoma", "Watkins Glen"]
 
 for num in nums:
 

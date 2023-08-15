@@ -53,7 +53,7 @@ data = []
 nums = [11, 5, 6, 31, 10, 38, 42]
 yrs = [2022, 2023]
 plate = ["Daytona", "Talladega", "Atlanta"]
-rc = ["Sonoma", "Watkins Glen"]
+rc = ["Sonoma", "Watkins Glen", "COTA", "Road America", "Indy Road Course", "Charlotte Roval", "Chicago Street"]
 
 for num in nums:
 

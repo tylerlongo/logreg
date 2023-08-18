@@ -8,7 +8,7 @@ def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
 # Logistic Regression implementation
-class LogisticRegressionCustom:
+class LogisticRegression:
     def __init__(self, learning_rate=0.01, num_iterations=10000):
         self.learning_rate = learning_rate
         self.num_iterations = num_iterations
@@ -33,15 +33,10 @@ class LogisticRegressionCustom:
             self.weights -= self.learning_rate * dw
             self.bias -= self.learning_rate * db
 
-    def predict(self, inputs):
-        linear_model = np.dot(inputs, self.weights) + self.bias
-        predictions = sigmoid(linear_model)
-        return (predictions > 0.5).astype(int)
-
     def predict_prob(self, inputs):
         linear_model = np.dot(inputs, self.weights) + self.bias
-        predictions = sigmoid(linear_model)
-        return predictions
+        prediction = sigmoid(linear_model)
+        return prediction
 
 
 # Initialize a 2D list to store the table data
@@ -52,12 +47,25 @@ data = []
 
 nums = [11, 5, 6, 31, 10, 38, 42]
 yrs = [2022, 2023]
+type = {"Daytona": "plate",
+        "Talladega": "plate",
+        "Atlanta": "plate",
+        "Sonoma": "rc",
+        "Watkins Glen": "rc",
+        "Charlotte Roval": "rc",
+        "COTA": "rc",
+        "Road America": "rc",
+        "Indy Road Course": "rc",
+        "Chicago Street": "rc"}
 plate = ["Daytona", "Talladega", "Atlanta"]
 rc = ["Sonoma", "Watkins Glen", "COTA", "Road America", "Indy Road Course", "Charlotte Roval", "Chicago Street"]
 
 for num in nums:
 
     finishes = []
+    platefins = []
+    rcfins = []
+    ovalfins = []
 
     for yr in yrs:
         url = "https://www.driveraverages.com/nascar/numberyear.php?carno_id=" + str(num) + "&yr_id=" + str(yr)
@@ -89,10 +97,6 @@ for num in nums:
                         week = []
                         start = int(row.find_all(["th", "td"])[7].get_text(strip=True))
                         track = row.find_all(["th", "td"])[5].get_text(strip=True)
-                        if track in plate:
-                            week.append(1)
-                        else:
-                            week.append(0)
                         week.append(start)
                         week.append(q1)
                         week.append(med)
@@ -112,17 +116,13 @@ for result in results:
 
 
 # Creating and training the Logistic Regression model
-logreg_model = LogisticRegressionCustom()
-logreg_model.fit(inputs, outputs)
+model = LogisticRegression()
+model.fit(inputs, outputs)
 
 # New point to classify
-new_point = np.array([[0, 5, 5, 10, 20]])
-
-# Predicting the class of the new point
-predicted_class = logreg_model.predict(new_point)
+new_point = np.array([[30, 20, 25, 30]])
 
 # Predicting the probability of each class for the new point
-predicted_prob = logreg_model.predict_prob(new_point)
+prediction = model.predict_prob(new_point)
 
-print("Predicted Class:", predicted_class)
-print("Predicted Probabilities:", predicted_prob)
+print("Predicted Probabilities:", prediction)

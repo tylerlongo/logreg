@@ -3,15 +3,12 @@ from bs4 import BeautifulSoup
 import numpy as np
 from logreg import LogisticRegression
 
-
 # Initialize a 2D list to store the table data
 data = []
 
-# URL of the webpage containing the table
-
-nums = [11, 5, 6, 31, 10, 38, 42]
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 31, 34, 38, 41, 42, 43, 45, 47, 48, 51, 77, 78, 99]
 yrs = [yr for yr in range(2022, 2024)]
-type = {"Daytona": "ss",
+types = {"Daytona": "ss",
         "Talladega": "ss",
         "Atlanta": "ss",
         "Sonoma": "rc",
@@ -42,6 +39,18 @@ type = {"Daytona": "ss",
         "Bristol Dirt": "s",
         "Gateway (WWT)": "s"}
 
+
+print("Driver Number: ")
+qnum = int(input())
+
+print("Starting Position: ")
+qstart = int(input())
+
+print("Track: ")
+track = input()
+qtype = types[track]
+
+
 for num in nums:
 
     finishes = []
@@ -67,25 +76,56 @@ for num in nums:
                 rownum += 1
             else:
                 cells = row.find_all(["th", "td"])
-                index = cells[3]
-                if not index.get_text(strip=True) == "":
+                index = cells[3].get_text(strip=True)
+                if not index == "":
+                    track = cells[5].get_text(strip=True)
+                    type = types[track]
+
                     races = len(finishes)
-                    if races > 0:
-                        q1 = np.percentile(finishes, 25)
-                        med = np.median(finishes)
-                        q3 = np.percentile(finishes, 75)
                     finish = int(cells[6].get_text(strip=True))
-                    finishes.append(finish)
+
                     if yr == 2023:
+                        q = np.percentile(finishes, 25)
+                        m = np.median(finishes)
                         week = []
                         start = int(cells[7].get_text(strip=True))
-                        track = cells[5].get_text(strip=True)
                         week.append(start)
-                        week.append(q1)
-                        week.append(med)
-                        week.append(q3)
+                        week.append(q)
+                        week.append(m)
+                        if type == "ss":
+                            tq = np.percentile(ssfins, 25)
+                            tm = np.median(ssfins)
+                        if type == "rc":
+                            tq = np.percentile(rcfins, 25)
+                            tm = np.median(rcfins)
+                        if type == "s":
+                            tq = np.percentile(sfins, 25)
+                            tm = np.median(sfins)
+                        week.append(tq)
+                        week.append(tm)
                         week.append(finish)
                         data.append(week)
+
+                    finishes.append(finish)
+                    if type == "ss":
+                        ssfins.append(finish)
+                    if type == "rc":
+                        rcfins.append(finish)
+                    if type == "s":
+                        sfins.append(finish)
+    if num == qnum:
+        qq = np.percentile(finishes, 25)
+        qm = np.median(finishes)
+        if qtype == "ss":
+            qtq = np.percentile(ssfins, 25)
+            qtm = np.median(ssfins)
+        if qtype == "rc":
+            qtq = np.percentile(rcfins, 25)
+            qtm = np.median(rcfins)
+        if qtype == "s":
+            qtq = np.percentile(sfins, 25)
+            qtm = np.median(sfins)
+
 
 # Splitting data into features (X) and labels (y)
 inputs = np.array(data)[:, :-1]
@@ -102,8 +142,9 @@ for result in results:
 model = LogisticRegression()
 model.fit(inputs, outputs)
 
+
 # New point to classify
-new_point = np.array([[30, 20, 25, 30]])
+new_point = np.array([[qstart, qq, qm, qtq, qtm]])
 
 # Predicting the probability of each class for the new point
 prediction = model.predict_prob(new_point)

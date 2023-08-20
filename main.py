@@ -40,15 +40,18 @@ types = {"Daytona": "ss",
         "Gateway (WWT)": "s"}
 
 
-print("Driver Number: ")
+print("Driver Number:", end=" ")
 qnum = int(input())
 
-print("Starting Position: ")
+print("Starting Position:", end=" ")
 qstart = int(input())
 
-print("Track: ")
+print("Track:", end=" ")
 track = input()
 qtype = types[track]
+
+print("Threshold:", end=" ")
+qthr = int(input())
 
 
 for num in nums:
@@ -132,7 +135,7 @@ inputs = np.array(data)[:, :-1]
 results = np.array(data)[:, -1]
 outputs = []
 for result in results:
-    if result > 15:
+    if result > qthr:
         outputs.append(0)
     else:
         outputs.append(1)
@@ -149,4 +152,4 @@ new_point = np.array([[qstart, qq, qm, qtq, qtm]])
 # Predicting the probability of each class for the new point
 prediction = model.predict_prob(new_point)
 
-print("Predicted Probabilities:", prediction)
+print("Probability of top " + str(qthr) + ": " + str(np.round(prediction[0]*100, 2)) + "%")

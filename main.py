@@ -40,6 +40,8 @@ types = {"Daytona": "ss",
         "Bristol Dirt": "s",
         "Gateway (WWT)": "s"}
 
+urls = {}
+
 
 print("Driver Number:", end=" ")
 qnum = int(input())
@@ -63,6 +65,8 @@ for num in nums:
 
     for yr in yrs:
         url = "https://www.driveraverages.com/nascar/numberyear.php?carno_id=" + str(num) + "&yr_id=" + str(yr)
+        if yr == yrs[-1]:
+            urls[num] = url
 
         # Send an HTTP GET request to the URL
         response = requests.get(url)

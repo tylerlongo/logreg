@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import numpy as np
+import sys
 from logreg import LogisticRegression
 
 # Initialize a 2D list to store the table data
@@ -50,8 +51,7 @@ print("Track:", end=" ")
 track = input()
 qtype = types[track]
 
-print("Threshold:", end=" ")
-qthr = int(input())
+qthr = sys.argv[1]
 
 
 for num in nums:

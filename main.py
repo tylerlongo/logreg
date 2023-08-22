@@ -7,8 +7,17 @@ from logreg import LogisticRegression
 # Initialize a 2D list to store the table data
 data = []
 
-nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 31, 34, 38, 41, 42, 43, 45, 47, 48, 51, 77, 78, 99]
-yrs = [yr for yr in range(2022, 2024)]
+nums = ((1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+        (9, 9),
+        (10, 10))
+yrs = tuple(yr for yr in range(2022, 2024))
 types = {"Daytona": "ss",
         "Talladega": "ss",
         "Atlanta": "ss",
@@ -40,7 +49,7 @@ types = {"Daytona": "ss",
         "Bristol Dirt": "s",
         "Gateway (WWT)": "s"}
 
-urls = {}
+thisyr = {}
 
 
 print("Driver Number:", end=" ")
@@ -53,20 +62,18 @@ print("Track:", end=" ")
 track = input()
 qtype = types[track]
 
-qthr = sys.argv[1]
+qthr = int(sys.argv[1])
 
 
-for num in nums:
+for numset in nums:
 
     finishes = []
     ssfins = []
     rcfins = []
     sfins = []
 
-    for yr in yrs:
-        url = "https://www.driveraverages.com/nascar/numberyear.php?carno_id=" + str(num) + "&yr_id=" + str(yr)
-        if yr == yrs[-1]:
-            urls[num] = url
+    for ind in range(len(yrs)):
+        url = "https://www.driveraverages.com/nascar/numberyear.php?carno_id=" + str(numset[ind]) + "&yr_id=" + str(yrs[ind])
 
         # Send an HTTP GET request to the URL
         response = requests.get(url)
@@ -91,7 +98,7 @@ for num in nums:
                     races = len(finishes)
                     finish = int(cells[6].get_text(strip=True))
 
-                    if yr == 2023:
+                    if ind == len(yrs) - 1:
                         q = np.percentile(finishes, 25)
                         m = np.median(finishes)
                         week = []
@@ -120,7 +127,7 @@ for num in nums:
                         rcfins.append(finish)
                     if type == "s":
                         sfins.append(finish)
-    if num == qnum:
+    if numset[ind] == qnum:
         qq = np.percentile(finishes, 25)
         qm = np.median(finishes)
         if qtype == "ss":

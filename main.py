@@ -1,10 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import numpy as np
-import sys
 from logreg import LogisticRegression
-
-query = sys.argv[0]
 
 nums = ((1, 1),
         (2, 2),
@@ -76,106 +73,95 @@ types = {"Daytona": "ss",
 
 testing = {}
 
+# Initialize a 2D list to store the table data
+training = []
 
-if True:
+for numset in nums:
 
-    # Initialize a 2D list to store the table data
-    training = []
+    finishes = []
+    ssfins = []
+    rcfins = []
+    sfins = []
 
-    print("Threshold:", end=" ")
-    qthr = int(input())
+    for ind in range(len(yrs)):
+        num = numset[ind]
+        yr = yrs[ind]
+        url = "https://www.driveraverages.com/nascar/numberyear.php?carno_id=" + str(num) + "&yr_id=" + str(yr)
 
+        # Send an HTTP GET request to the URL
+        response = requests.get(url)
 
-    for numset in nums:
+        soup = BeautifulSoup(response.content, "html.parser")
+            
+        # Find the table containing the data
+        table = soup.find("table")
 
-        finishes = []
-        ssfins = []
-        rcfins = []
-        sfins = []
+        # Loop through each row in the table
+        rownum = 0
+        for row in table.find_all("tr"):
+            if rownum < 5:
+                rownum += 1
+            else:
+                cells = row.find_all(["th", "td"])
+                index = cells[3].get_text(strip=True)
+                if not index == "":
+                    track = cells[5].get_text(strip=True)
+                    type = types[track]
 
-        for ind in range(len(yrs)):
-            num = numset[ind]
-            yr = yrs[ind]
-            url = "https://www.driveraverages.com/nascar/numberyear.php?carno_id=" + str(num) + "&yr_id=" + str(yr)
+                    races = len(finishes)
+                    finish = int(cells[6].get_text(strip=True))
 
-            # Send an HTTP GET request to the URL
-            response = requests.get(url)
-
-            soup = BeautifulSoup(response.content, "html.parser")
-                
-            # Find the table containing the data
-            table = soup.find("table")
-
-            # Loop through each row in the table
-            rownum = 0
-            for row in table.find_all("tr"):
-                if rownum < 5:
-                    rownum += 1
-                else:
-                    cells = row.find_all(["th", "td"])
-                    index = cells[3].get_text(strip=True)
-                    if not index == "":
-                        track = cells[5].get_text(strip=True)
-                        type = types[track]
-
-                        races = len(finishes)
-                        finish = int(cells[6].get_text(strip=True))
-
-                        if ind == len(yrs) - 1:
-                            q = np.percentile(finishes, 25)
-                            m = np.median(finishes)
-                            start = int(cells[7].get_text(strip=True))
-                            if type == "ss":
-                                tq = np.percentile(ssfins, 25)
-                                tm = np.median(ssfins)
-                            if type == "rc":
-                                tq = np.percentile(rcfins, 25)
-                                tm = np.median(rcfins)
-                            if type == "s":
-                                tq = np.percentile(sfins, 25)
-                                tm = np.median(sfins)
-                            week = [start, q, m, tq, tm, finish]
-                            training.append([start, q, m, tq, tm, finish])
-
-
-                        finishes.append(finish)
+                    if ind == len(yrs) - 1:
+                        q1 = np.percentile(finishes, 25)
+                        q2 = np.median(finishes)
+                        q3 = np.percentile(finishes, 75)
+                        start = int(cells[7].get_text(strip=True))
                         if type == "ss":
-                            ssfins.append(finish)
+                            tq1 = np.percentile(ssfins, 25)
+                            tq2 = np.median(ssfins)
+                            tq3 = np.percentile(ssfins, 75)
                         if type == "rc":
-                            rcfins.append(finish)
+                            tq1 = np.percentile(rcfins, 25)
+                            tq2 = np.median(rcfins)
+                            tq3 = np.percentile(rcfins, 75)
                         if type == "s":
-                            sfins.append(finish)
-
-                        if ind == len(yrs) - 1:
-                            if num not in testing:
-                                testing[num] = [None for i in range(8)]
-                            driverfile = testing[num]
-                            driverfile[0] = np.percentile(finishes, 25)
-                            driverfile[1] = np.median(finishes)
-                            driverfile[2] = np.percentile(ssfins, 25)
-                            driverfile[3] = np.median(ssfins)
-                            driverfile[4] = np.percentile(rcfins, 25)
-                            driverfile[5] = np.median(rcfins)
-                            driverfile[6] = np.percentile(sfins, 25)
-                            driverfile[7] = np.median(sfins)
-
-    # Splitting data into inputs and results
-    inputs = np.array(training)[:, :-1]
-    results = np.array(training)[:, -1]
-    outputs = []
-    for result in results:
-        if result > qthr:
-            outputs.append(0)
-        else:
-            outputs.append(1)
+                            tq1 = np.percentile(sfins, 25)
+                            tq2 = np.median(sfins)
+                            tq3 = np.percentile(sfins, 75)
+                        training.append([start, q1, q2, q3, tq1, tq2, tq3, finish])
 
 
-    # Creating and training the Logistic Regression model
-    model = LogisticRegression()
-    model.fit(inputs, outputs)
+                    finishes.append(finish)
+                    if type == "ss":
+                        ssfins.append(finish)
+                    if type == "rc":
+                        rcfins.append(finish)
+                    if type == "s":
+                        sfins.append(finish)
 
-if True:
-    
+                    if ind == len(yrs) - 1:
+                        if num not in testing:
+                            testing[num] = [None for i in range(12)]
+                        driverfile = testing[num]
+                        driverfile[0] = np.percentile(finishes, 25)
+                        driverfile[1] = np.median(finishes)
+                        driverfile[2] = np.percentile(finishes, 75)
+                        driverfile[3] = np.percentile(ssfins, 25)
+                        driverfile[4] = np.median(ssfins)
+                        driverfile[5] = np.percentile(ssfins, 75)
+                        driverfile[6] = np.percentile(rcfins, 25)
+                        driverfile[7] = np.median(rcfins)
+                        driverfile[8] = np.percentile(rcfins, 75)
+                        driverfile[9] = np.percentile(sfins, 25)
+                        driverfile[10] = np.median(sfins)
+                        driverfile[11] = np.percentile(sfins, 75)
+                        
+
+# Splitting data into inputs and results
+inputs = np.array(training)[:, :-1]
+results = np.array(training)[:, -1]
+
+while True:
     print("Driver Number:", end=" ")
     qnum = int(input())
 
@@ -188,24 +174,41 @@ if True:
 
     driverfile = testing[qnum]
 
-    qq = driverfile[0]
-    qm = driverfile[1]
+    q1 = driverfile[0]
+    q2 = driverfile[1]
+    q3 = driverfile[2]
     if qtype == "ss":
-        qtq = driverfile[2]
-        qtm = driverfile[3]
+        tq1 = driverfile[3]
+        tq2 = driverfile[4]
+        tq3 = driverfile[5]
     if qtype == "rc":
-        qtq = driverfile[4]
-        qtm = driverfile[5]
+        tq1 = driverfile[6]
+        tq2 = driverfile[7]
+        tq3 = driverfile[8]
     if qtype == "s":
-        qtq = driverfile[6]
-        qtm = driverfile[7]
+        tq1 = driverfile[9]
+        tq2 = driverfile[10]
+        tq3 = driverfile[11]
 
 
     # New point to classify
-    new_point = np.array([[qstart, qq, qm, qtq, qtm]])
+    new_point = np.array([[qstart, q1, q2, q3, tq1, tq2, tq3]])
 
-    # Predicting the probability of each class for the new point
-    prediction = model.predict(new_point)
+    for thr in range(1, 37):
+        outputs = []
+        for result in results:
+            if result > thr:
+                outputs.append(0)
+            else:
+                outputs.append(1)
 
 
-    print("Probability of top " + str(qthr) + ": " + str(np.round(prediction[0]*100, 2)) + "%")
+        # Creating and training the Logistic Regression model
+        model = LogisticRegression()
+        model.fit(inputs, outputs)
+
+        # Predicting the probability of each class for the new point
+        prediction = model.predict(new_point)
+
+
+        print("Probability of top " + str(thr) + ": " + str(np.round(prediction[0]*100, 2)) + "%")

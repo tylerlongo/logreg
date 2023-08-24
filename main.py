@@ -112,50 +112,44 @@ for numset in nums:
                     finish = int(cells[6].get_text(strip=True))
 
                     if ind == len(yrs) - 1:
-                        q1 = np.percentile(finishes, 25)
-                        q2 = np.median(finishes)
-                        q3 = np.percentile(finishes, 75)
+                        q = np.percentile(finishes, 25)
+                        m = np.median(finishes)
                         start = int(cells[7].get_text(strip=True))
                         if type == "ss":
-                            tq1 = np.percentile(ssfins, 25)
-                            tq2 = np.median(ssfins)
-                            tq3 = np.percentile(ssfins, 75)
-                        if type == "rc":
-                            tq1 = np.percentile(rcfins, 25)
-                            tq2 = np.median(rcfins)
-                            tq3 = np.percentile(rcfins, 75)
-                        if type == "s":
-                            tq1 = np.percentile(sfins, 25)
-                            tq2 = np.median(sfins)
-                            tq3 = np.percentile(sfins, 75)
-                        training.append([start, q1, q2, q3, tq1, tq2, tq3, finish])
+                            tq = np.percentile(ssfins, 25)
+                            tm = np.median(ssfins)
+                            ss = 1
+                        elif type == "rc":
+                            tq = np.percentile(rcfins, 25)
+                            tm = np.median(rcfins)
+                            ss = 0
+                        else:
+                            tq = np.percentile(sfins, 25)
+                            tm = np.median(sfins)
+                            ss = 0
+                        training.append([start, q, m, tq, tm, ss, finish])
 
 
                     finishes.append(finish)
                     if type == "ss":
                         ssfins.append(finish)
-                    if type == "rc":
+                    elif type == "rc":
                         rcfins.append(finish)
-                    if type == "s":
+                    else:
                         sfins.append(finish)
 
                     if ind == len(yrs) - 1:
                         if num not in testing:
-                            testing[num] = [None for i in range(12)]
+                            testing[num] = [None for i in range(8)]
                         driverfile = testing[num]
                         driverfile[0] = np.percentile(finishes, 25)
                         driverfile[1] = np.median(finishes)
-                        driverfile[2] = np.percentile(finishes, 75)
-                        driverfile[3] = np.percentile(ssfins, 25)
-                        driverfile[4] = np.median(ssfins)
-                        driverfile[5] = np.percentile(ssfins, 75)
-                        driverfile[6] = np.percentile(rcfins, 25)
-                        driverfile[7] = np.median(rcfins)
-                        driverfile[8] = np.percentile(rcfins, 75)
-                        driverfile[9] = np.percentile(sfins, 25)
-                        driverfile[10] = np.median(sfins)
-                        driverfile[11] = np.percentile(sfins, 75)
-                        
+                        driverfile[2] = np.percentile(ssfins, 25)
+                        driverfile[3] = np.median(ssfins)
+                        driverfile[4] = np.percentile(rcfins, 25)
+                        driverfile[5] = np.median(rcfins)
+                        driverfile[6] = np.percentile(sfins, 25)
+                        driverfile[7] = np.median(sfins)
 
 # Splitting data into inputs and results
 inputs = np.array(training)[:, :-1]
@@ -174,27 +168,27 @@ while True:
 
     driverfile = testing[qnum]
 
-    q1 = driverfile[0]
-    q2 = driverfile[1]
-    q3 = driverfile[2]
+    qq = driverfile[0]
+    qm = driverfile[1]
     if qtype == "ss":
-        tq1 = driverfile[3]
-        tq2 = driverfile[4]
-        tq3 = driverfile[5]
+        qtq = driverfile[2]
+        qtm = driverfile[3]
+        ss = 1
     if qtype == "rc":
-        tq1 = driverfile[6]
-        tq2 = driverfile[7]
-        tq3 = driverfile[8]
+        qtq = driverfile[4]
+        qtm = driverfile[5]
+        ss = 0
     if qtype == "s":
-        tq1 = driverfile[9]
-        tq2 = driverfile[10]
-        tq3 = driverfile[11]
+        qtq = driverfile[6]
+        qtm = driverfile[7]
+        ss = 0
 
 
     # New point to classify
-    new_point = np.array([[qstart, q1, q2, q3, tq1, tq2, tq3]])
+    new_point = np.array([[qstart, qq, qm, qtq, qtm, ss]])
 
-    for thr in range(1, 37):
+    thrs = [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 36, 37, 38, 39, 40]
+    for thr in thrs:
         outputs = []
         for result in results:
             if result > thr:

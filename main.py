@@ -76,12 +76,16 @@ testing = {}
 # Initialize a 2D list to store the table data
 training = []
 
+print("******************************")
+print("training AI algorithm", end=" ", flush=True)
+
 for numset in nums:
 
     finishes = []
     ssfins = []
     rcfins = []
     sfins = []
+    print(".", end=" ", flush=True)
 
     for ind in range(len(yrs)):
         num = numset[ind]
@@ -90,6 +94,7 @@ for numset in nums:
 
         # Send an HTTP GET request to the URL
         response = requests.get(url)
+
 
         soup = BeautifulSoup(response.content, "html.parser")
             
@@ -155,7 +160,11 @@ for numset in nums:
 inputs = np.array(training)[:, :-1]
 results = np.array(training)[:, -1]
 
+print("")
+
 while True:
+    print("******************************")
+
     print("Driver Number:", end=" ")
     qnum = int(input())
 

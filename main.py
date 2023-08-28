@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import numpy as np
 from logreg import LogisticRegression
+import matplotlib.pyplot as plt
 
 nums = ((1, 1),
         (2, 2),
@@ -196,7 +197,10 @@ while True:
     # New point to classify
     new_point = np.array([[qstart, qq, qm, qtq, qtm, ss]])
 
-    thrs = [1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 36, 37, 38, 39, 40]
+    thrs = [i+1 for i in range(40)]
+
+    probs = []
+
     for thr in thrs:
         outputs = []
         for result in results:
@@ -212,6 +216,7 @@ while True:
 
         # Predicting the probability of each class for the new point
         prediction = model.predict(new_point)
-
-
-        print("Probability of top " + str(thr) + ": " + str(np.round(prediction[0]*100, 2)) + "%")
+        probs.append(prediction[0])
+    
+    plt.bar(thrs, probs)
+    plt.show()

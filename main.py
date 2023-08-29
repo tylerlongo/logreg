@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import numpy as np
 from logreg import LogisticRegression
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 nums = ((1, 1),
         (2, 2),
@@ -197,14 +198,14 @@ while True:
     # New point to classify
     new_point = np.array([[qstart, qq, qm, qtq, qtm, ss]])
 
-    thrs = [i+1 for i in range(40)]
+    thrs = [str(i+1) for i in range(36)]
 
     probs = []
 
     for thr in thrs:
         outputs = []
         for result in results:
-            if result > thr:
+            if result > int(thr):
                 outputs.append(0)
             else:
                 outputs.append(1)
@@ -218,5 +219,45 @@ while True:
         prediction = model.predict(new_point)
         probs.append(prediction[0])
     
-    plt.bar(thrs, probs)
+    plt.rcParams['axes.facecolor'] = 'black'
+    plt.rcParams['figure.facecolor'] = 'black'
+    plt.rcParams['savefig.facecolor'] = 'black'
+
+    def format(value):
+        if value < 0.01:
+            return 2
+        elif value < 0.1:
+            return 1
+        else:
+            return 0
+
+    plt.figure(figsize=(10, 4))
+
+    plt.style.use('dark_background')
+
+    spectrum = ['#0000FF', '#00FFFF', '#00FF00', '#FFFF00', '#FF0000']
+    colormap = colors.LinearSegmentedColormap.from_list('custom_colormap', spectrum, N=256)
+
+    # Create a bar graph with colored bars
+    bars = plt.bar(thrs, probs, color=colormap(probs))
+
+
+    # Annotate each bar with its scaled value
+    for bar, value in zip(bars, probs):
+        if value < 0.01:
+            annotation = f'{value*100:.2f}'
+        elif value < 0.1:
+            annotation = f'{value*100:.1f}'
+        else:
+            annotation = f'{value*100:.0f}'
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, annotation,
+                ha='center', va='bottom', color='white', size=7, font="arial")
+
+    ax = plt.gca()
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.yaxis.set_visible(False)  # Hide the y-axis
+
+    # Display the plot
     plt.show()

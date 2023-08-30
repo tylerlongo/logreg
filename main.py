@@ -267,4 +267,31 @@ while True:
 
     plt.xticks(fontname='Arial', fontsize=10)
 
+    plt.text(0, 0.72, '#', color='white', fontsize=10,
+         ha='left', va='center', font='arial')
+
+    plt.text(0.4, 0.72, qnum, color='white', fontsize=30,
+            ha='left', va='center', font='arial', weight='bold')
+
+    plt.text(0, 0.65, 'Track: ' + track, color='white', fontsize=7,
+            ha='left', va='center', font='arial')
+
+    plt.text(0, 0.62, 'Type: ' + qtype, color='white', fontsize=7,
+            ha='left', va='center', font='arial')
+
+    plt.text(0, 0.59, 'Start: ' + str(qstart), color='white', fontsize=7,
+            ha='left', va='center', font='arial')
+
+    plt.text(0, 0.56, 'Q: ' + str(round(qq, 0)), color='white', fontsize=7,
+            ha='left', va='center', font='arial')
+
+    plt.text(0, 0.53, 'M: ' + str(round(qm, 0)), color='white', fontsize=7,
+            ha='left', va='center', font='arial')
+
+    plt.text(0, 0.5, 'TQ: ' + str(round(qtq, 0)), color='white', fontsize=7,
+            ha='left', va='center', font='arial')
+
+    plt.text(0, 0.47, 'TM: ' + str(round(qtm, 0)), color='white', fontsize=7,
+            ha='left', va='center', font='arial')
+
     plt.savefig('chart.png', dpi=300, bbox_inches='tight')

@@ -223,6 +223,12 @@ while True:
     plt.rcParams['figure.facecolor'] = 'black'
     plt.rcParams['savefig.facecolor'] = 'black'
 
+    dlt = [probs[0]]
+    for i in range(len(probs)-1):
+        dlt.append(probs[i+1]-probs[i])
+
+    norm = colors.Normalize(vmin=min(dlt), vmax=max(dlt))
+
     def format(value):
         if value < 0.01:
             return 2
@@ -239,7 +245,7 @@ while True:
     colormap = colors.LinearSegmentedColormap.from_list('custom_colormap', spectrum, N=256)
 
     # Create a bar graph with colored bars
-    bars = plt.bar(thrs, probs, color=colormap(probs))
+    bars = plt.bar(thrs, probs, color=plt.cm.viridis(norm(dlt)))
 
 
     # Annotate each bar with its scaled value
@@ -258,6 +264,8 @@ while True:
     ax.spines['right'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.yaxis.set_visible(False)  # Hide the y-axis
+
+    plt.xticks(fontname='Arial', fontsize=12)
 
     # Display the plot
     plt.show()

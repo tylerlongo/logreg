@@ -198,7 +198,7 @@ while True:
     # New point to classify
     new_point = np.array([[qstart, qq, qm, qtq, qtm, ss]])
 
-    thrs = [str(i+1) for i in range(36)]
+    thrs = [str(i+1) for i in range(30)]
 
     probs = []
 
@@ -227,7 +227,7 @@ while True:
     for i in range(len(probs)-1):
         dlt.append(probs[i+1]-probs[i])
 
-    norm = colors.Normalize(vmin=min(dlt), vmax=max(dlt))
+    norm = colors.Normalize(vmin=1/72, vmax=1/18)
 
     def format(value):
         if value < 0.01:
@@ -265,7 +265,6 @@ while True:
     ax.spines['left'].set_visible(False)
     ax.yaxis.set_visible(False)  # Hide the y-axis
 
-    plt.xticks(fontname='Arial', fontsize=12)
+    plt.xticks(fontname='Arial', fontsize=10)
 
-    # Display the plot
-    plt.show()
+    plt.savefig('chart.png', dpi=300, bbox_inches='tight')

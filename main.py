@@ -124,17 +124,14 @@ for numset in nums:
                         start = int(cells[7].get_text(strip=True))
                         if type == "ss":
                             tq = np.percentile(ssfins, 25)
-                            tm = np.median(ssfins)
                             ss = 1
                         elif type == "rc":
                             tq = np.percentile(rcfins, 25)
-                            tm = np.median(rcfins)
                             ss = 0
                         else:
                             tq = np.percentile(sfins, 25)
-                            tm = np.median(sfins)
                             ss = 0
-                        training.append([start, q, m, tq, tm, ss, finish])
+                        training.append([start, q, m, tq, ss, finish])
 
 
                     finishes.append(finish)
@@ -147,16 +144,13 @@ for numset in nums:
 
                     if ind == len(yrs) - 1:
                         if num not in testing:
-                            testing[num] = [None for i in range(8)]
+                            testing[num] = [None for i in range(5)]
                         driverfile = testing[num]
                         driverfile[0] = np.percentile(finishes, 25)
                         driverfile[1] = np.median(finishes)
                         driverfile[2] = np.percentile(ssfins, 25)
-                        driverfile[3] = np.median(ssfins)
-                        driverfile[4] = np.percentile(rcfins, 25)
-                        driverfile[5] = np.median(rcfins)
-                        driverfile[6] = np.percentile(sfins, 25)
-                        driverfile[7] = np.median(sfins)
+                        driverfile[3] = np.percentile(rcfins, 25)
+                        driverfile[4] = np.percentile(sfins, 25)
 
 # Splitting data into inputs and results
 inputs = np.array(training)[:, :-1]
@@ -183,20 +177,17 @@ while True:
     qm = driverfile[1]
     if qtype == "ss":
         qtq = driverfile[2]
-        qtm = driverfile[3]
         ss = 1
     if qtype == "rc":
-        qtq = driverfile[4]
-        qtm = driverfile[5]
+        qtq = driverfile[3]
         ss = 0
     if qtype == "s":
-        qtq = driverfile[6]
-        qtm = driverfile[7]
+        qtq = driverfile[4]
         ss = 0
 
 
     # New point to classify
-    new_point = np.array([[qstart, qq, qm, qtq, qtm, ss]])
+    new_point = np.array([[qstart, qq, qm, qtq, ss]])
 
     thrs = [str(i+1) for i in range(30)]
 
@@ -291,7 +282,5 @@ while True:
     plt.text(0, 0.5, 'TQ: ' + str(round(qtq, 0)), color='white', fontsize=7,
             ha='left', va='center', font='arial')
 
-    plt.text(0, 0.47, 'TM: ' + str(round(qtm, 0)), color='white', fontsize=7,
-            ha='left', va='center', font='arial')
 
     plt.savefig('chart.png', dpi=300, bbox_inches='tight')

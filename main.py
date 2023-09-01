@@ -79,7 +79,7 @@ testing = {}
 training = []
 
 print("******************************")
-print("training AI algorithm", end=" ", flush=True)
+print("retrieving data", end=" ", flush=True)
 
 for numset in nums:
 

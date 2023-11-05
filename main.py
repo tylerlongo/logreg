@@ -263,15 +263,6 @@ while True:
 
     norm = colors.Normalize(vmin=1/72, vmax=1/18)
 
-    def format(value):
-        if value < 0.01:
-            return 2
-        elif value < 0.1:
-            return 1
-        else:
-            return 0
-
-
     plt.style.use('dark_background')
     xpos = np.arange(len(thrs))
     ypos = np.array(probs)/probs[-1]
@@ -281,9 +272,9 @@ while True:
 
     # Annotate each bar with its scaled value
     for bar, value in zip(bars, probs):
-        if value < 0.01:
+        if value < 0.0095:
             annotation = f'{value*100:.2f}'
-        elif value < 0.1:
+        elif value < 0.095:
             annotation = f'{value*100:.1f}'
         else:
             annotation = f'{value*100:.0f}'

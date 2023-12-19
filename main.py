@@ -51,9 +51,6 @@ for thr in thrs:
         weights.append(model.weights)
         bias.append(model.bias)
 
-print(weights)
-
-
 
 while True:
     print("******************************")
@@ -80,8 +77,6 @@ while True:
         qtq = driverfile[6]
         qtm = driverfile[7]
         ss = 0
-
-    print([qq, qm, qtq, qtm, ss])
 
     # New point to classify
     new_point = np.array([[qq, qm, qtq, qtm, ss, 36]])

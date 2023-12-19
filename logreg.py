@@ -7,7 +7,7 @@ def sigmoid(z):
 
 # Logistic Regression implementation
 class LogisticRegression:
-    def __init__(self, learning_rate=0.0001, num_iterations=10000):
+    def __init__(self, learning_rate=0.001, num_iterations=10000):
         self.learning_rate = learning_rate
         self.num_iterations = num_iterations
         self.weights = None
@@ -20,8 +20,7 @@ class LogisticRegression:
 
         # Gradient descent optimization
         for _ in range(self.num_iterations):
-            linear_model = np.dot(inputs, self.weights) + self.bias
-            predictions = sigmoid(linear_model)
+            predictions = sigmoid(np.dot(inputs, self.weights) + self.bias)
 
             # Compute gradients
             dw = (1 / num_samples) * np.dot(inputs.T, (predictions - outputs))
